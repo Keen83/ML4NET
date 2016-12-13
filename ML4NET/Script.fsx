@@ -33,24 +33,39 @@ let reader path =
     data.[1..]
     |> Array.map toObservation
 
-let manhattanDistance pixels1 pixels2 = 
+type Distance = int[] * int[] -> int
+
+let manhattanDistance (pixels1, pixels2) = 
     Array.zip pixels1 pixels2
     |> Array.map (fun (x,y) -> abs(x - y))
     |> Array.sum
 
-let train(trainingset:Observation[]) = 
+let euclideanDistance (pixels1, pixels2) = 
+    Array.zip pixels1 pixels2
+    |> Array.map (fun (x, y) -> pown (x-y) 2)
+    |> Array.sum
+
+let train(trainingset:Observation[]) (dist:Distance) = 
     let classify (pixels:int[]) = 
         trainingset
-        |> Array.minBy (fun x -> manhattanDistance x.Pixels pixels)
+        |> Array.minBy (fun x -> dist (x.Pixels, pixels))
         |> fun x -> x.Label
     classify
 
 let trainingData = reader trainingPath
 
-let classifier = train trainingData
+let manhattanClassifier = train trainingData manhattanDistance
+let euclideanCassifier = train trainingData euclideanDistance
 
 let validationData = reader validationPath
 
-validationData
-|> Array.averageBy (fun x -> if classifier x.Pixels = x.Label then 1. else 0.)
-|> printfn "Correct: %.3f"
+let evaluate data classifier = 
+    data
+    |> Array.averageBy (fun x -> if classifier x.Pixels = x.Label then 1. else 0.)
+    |> printfn "Correct: %.3f"
+
+printfn "Manhatten"
+evaluate validationData manhattanClassifier
+
+printfn "Euclidean"
+evaluate validationData euclideanCassifier
