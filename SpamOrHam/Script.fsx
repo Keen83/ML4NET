@@ -40,10 +40,20 @@ let dataset =
     readLines path
     |> Seq.map parseLine
 
-let pr el =
-    let t, s = el
-    printfn "%s" s
+let spamWithFREE = 
+    dataset
+    |> Seq.filter (fun(docType,_) -> docType = Spam)
+    |> Seq.filter (fun(_,sms) -> sms.Contains("FREE"))
+    |> Seq.length
 
-dataset 
-    |> Seq.take 3
-    |> Seq.iter pr
+let hamWithFREE =
+    dataset
+    |> Seq.filter (fun(docType,_) -> docType = Ham)
+    |> Seq.filter (fun(_,sms) -> sms.Contains("FREE"))
+    |> Seq.length
+
+let primitiveClassifier (sms: string) =
+    match sms.Contains("FREE") with
+    | true -> Spam
+    | false -> Ham
+
