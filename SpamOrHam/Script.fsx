@@ -130,3 +130,17 @@ let ham, spam =
         |> Array.partition (fun (lbl, _) -> lbl=Ham)
     rawHam |> Array.map snd,
     rawSpam |> Array.map snd
+
+let hamCount = ham |> vocabulary casedTokenizer |> Set.count
+let spamCount = spam |> vocabulary casedTokenizer |> Set.count
+
+let topHam = ham |> top (hamCount / 10) casedTokenizer
+let topSpam = spam |> top (spamCount / 10) casedTokenizer
+
+let topTokens = Set.union topHam topSpam
+
+evaluate casedTokenizer topTokens
+
+let commonTokens = Set.intersect topHam topSpam
+let specificTokens = Set.difference topTokens commonTokens
+evaluate casedTokenizer specificTokens
