@@ -112,3 +112,21 @@ let casedTokens =
     training
     |> Seq.map snd
     |> vocabulary casedTokenizer
+
+evaluate casedTokenizer (["txt"] |> Set)
+evaluate casedTokenizer casedTokens
+
+let top n (tokenizer:Tokenizer) (docs:string[]) =
+    let tokenized = docs |> Array.map tokenizer
+    let tokens = tokenized |> Set.unionMany
+    tokens
+    |> Seq.sortBy (fun t -> - countIn tokenized t)
+    |> Seq.take n
+    |> Set.ofSeq
+
+let ham, spam =
+    let rawHam, rawSpam =
+        training
+        |> Array.partition (fun (lbl, _) -> lbl=Ham)
+    rawHam |> Array.map snd,
+    rawSpam |> Array.map snd
