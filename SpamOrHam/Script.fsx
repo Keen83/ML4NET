@@ -60,7 +60,7 @@ let primitiveClassifier (sms: string) =
 open System.Text.RegularExpressions
 let matchWords = Regex(@"\w+")
 
-let tokens (text:string) =
+let wordTokenizer (text:string) =
     text.ToLowerInvariant()
     |> matchWords.Matches
     |> Seq.cast<Match>
@@ -77,13 +77,38 @@ let validation =
     |> Seq.take 1000
     |> Array.ofSeq
 
-training.Length
-validation.Length
-let txtClassifier = train training tokens (["free", "txt"] |> Set)
+let vocabulary (tokenizer:Tokenizer) (corpus:string seq) =
+    corpus
+    |> Seq.map tokenizer
+    |> Set.unionMany
 
-validation
-|> Seq.averageBy (fun (docType, sms) ->
-    if docType = txtClassifier sms then 1.0 else 0.0)
-|> printfn "Based on 'txt', correctly classified: %.3f"
+let allTokens =
+    training
+    |> Seq.map snd
+    |> vocabulary wordTokenizer
 
-Hello "World"
+let txtClassifier = train training wordTokenizer (["txt"] |> Set)
+let fullClassifier = train training wordTokenizer allTokens
+
+
+let evaluate (tokenizer:Tokenizer) (tokens:Token Set) =
+    let classifier = train training tokenizer tokens
+    validation 
+    |> Seq.averageBy (fun (docType, sms) ->
+        if docType = classifier sms then 1.0 else 0.0)
+    |> printfn "Correctly classified: %.3f"
+
+evaluate wordTokenizer (["txt"] |> Set)
+evaluate wordTokenizer allTokens
+
+let casedTokenizer (text:string) =
+    text
+    |> matchWords.Matches
+    |> Seq.cast<Match>
+    |> Seq.map (fun m -> m.Value)
+    |> Set.ofSeq
+
+let casedTokens =
+    training
+    |> Seq.map snd
+    |> vocabulary casedTokenizer
