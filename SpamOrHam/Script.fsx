@@ -57,4 +57,33 @@ let primitiveClassifier (sms: string) =
     | true -> Spam
     | false -> Ham
 
+open System.Text.RegularExpressions
+let matchWords = Regex(@"\w+")
+
+let tokens (text:string) =
+    text.ToLowerInvariant()
+    |> matchWords.Matches
+    |> Seq.cast<Match>
+    |> Seq.map (fun m -> m.Value)
+    |> Set.ofSeq
+
+let training = 
+    dataset
+    |> Seq.skip 1000
+    |> Array.ofSeq
+
+let validation = 
+    dataset
+    |> Seq.take 1000
+    |> Array.ofSeq
+
+training.Length
+validation.Length
+let txtClassifier = train training tokens (["free", "txt"] |> Set)
+
+validation
+|> Seq.averageBy (fun (docType, sms) ->
+    if docType = txtClassifier sms then 1.0 else 0.0)
+|> printfn "Based on 'txt', correctly classified: %.3f"
+
 Hello "World"
