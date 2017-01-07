@@ -169,3 +169,31 @@ let txt (text:string) =
     | false -> text
 
 let smartTokenizer = casedTokenizer >> Set.map phone >> Set.map txt
+
+smartTokenizer "Hello World, call 08123456789 or txt 12345"
+
+let smartTokens = 
+    specificTokens
+    |> Set.add "__TXT__"
+    |> Set.add "__PHONE__"
+
+evaluate smartTokenizer smartTokens
+
+
+
+let bestClassifier = train training smartTokenizer smartTokens
+validation
+|> Seq.filter (fun(docType,_) -> docType = Ham)
+|> Seq.averageBy (fun (docType, sms) ->
+    if docType = bestClassifier sms
+    then 1.0
+    else 0.0)
+|> printfn "Properly classified Ham: %.5f"
+
+validation
+|> Seq.filter (fun(docType,_) -> docType = Spam)
+|> Seq.averageBy (fun (docType, sms) ->
+    if docType = bestClassifier sms
+    then 1.0
+    else 0.0)
+|> printfn "Properly classified Spam: %.5f"
