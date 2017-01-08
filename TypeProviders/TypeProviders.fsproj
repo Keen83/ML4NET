@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataLoader.fs" />
-    <Compile Include="TypeProviders.fss" />
+    <Compile Include="TypeProviders.fsx" />
     <None Include="avtobazar.fsx" />
   </ItemGroup>
   <PropertyGroup>
