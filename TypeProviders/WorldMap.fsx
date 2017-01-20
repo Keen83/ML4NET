@@ -1,9 +1,17 @@
 #I @"..\packages"
 #r @"FSharp.Data\lib\net40\FSharp.Data.dll"
 #r @"Deedle\lib\net40\Deedle.dll"
+#r @"R.NET.Community\lib\net40\RDotNet.dll"
+#r @"RProvider\lib\net40\RProvider.Runtime.dll"
+#r @"RProvider\lib\net40\RProvider.dll"
+#r @"D:\Keen\Documents\Visual Studio 2015\Projects\ML4NET\packages\Deedle.RPlugin\lib\net40\Deedle.RProvider.Plugin.dll"
 
 open FSharp.Data
 open Deedle
+open RProvider
+open RProvider.``base``
+open Deedle.RPlugin
+open RProvider.rworldmap
 
 let wb = WorldBankData.GetDataContext()
 let countries = wb.Countries
@@ -29,3 +37,7 @@ let dataframe = frame [
     "Surface", surface ]
 
 dataframe?Code <- dataframe.RowKeys
+
+let map = R.joinCountryData2Map(dataframe, "ISO3", "Code")
+R.mapCountryData(map, "Pop2010")
+R.mapCountryData(map, "Surface")

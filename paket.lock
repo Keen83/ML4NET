@@ -7,7 +7,7 @@ NUGET
       R.NET.Community.FSharp (>= 1.6.4)
       RProvider (>= 1.1.13)
     DynamicInterop (0.7.4)
-    FAKE (4.48)
+    FAKE (4.50)
     FSharp.Core (4.0.0.1)
     FSharp.Data (2.3.2)
       Zlib.Portable (>= 1.11) - framework: >= netstandard11, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
