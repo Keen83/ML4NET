@@ -2,6 +2,7 @@ source https://www.nuget.org/api/v2
 nuget Deedle
 nuget Deedle.RPlugin
 nuget FAKE
+nuget FSharp.Charting
 nuget FSharp.Core
 nuget Fsharp.Data
 nuget RProvider
