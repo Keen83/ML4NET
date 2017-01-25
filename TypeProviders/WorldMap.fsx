@@ -41,3 +41,11 @@ dataframe?Code <- dataframe.RowKeys
 let map = R.joinCountryData2Map(dataframe, "ISO3", "Code")
 R.mapCountryData(map, "Pop2010")
 R.mapCountryData(map, "Surface")
+
+dataframe?Density <- dataframe?Pop2010 / dataframe?Surface
+let map = R.joinCountryData2Map(dataframe, "ISO3", "Code")
+R.mapCountryData(map, "Density")
+
+dataframe?Growth <- dataframe?Pop2010 - dataframe?Pop2000
+let map = R.joinCountryData2Map(dataframe, "ISO3", "Code")
+R.mapCountryData(map, "Growth")
